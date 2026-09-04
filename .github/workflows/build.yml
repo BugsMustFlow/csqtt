@@ -8,18 +8,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Скачиваем код из вашего репозитория
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install Cross-compiler tool
+    # 2. Компилируем серверную часть внутри официального контейнера со всеми компиляторами (C++, CMake, Rust)
+    - name: Build release binary via Muslrust Docker
       run: |
-        cargo install cross
+        docker run --rm -v ${{ github.workspace }}:/volume -w /volume/rust-server clux/muslrust:stable cargo build --release --target aarch64-unknown-linux-musl --bin csqtt
 
-    - name: Build release binary via Cross
-      run: |
-        cd rust-server
-        cross build --release --target aarch64-unknown-linux-musl --bin csqtt
-
+    # 3. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
     - name: Upload compiled binary
       uses: actions/upload-artifact@v4
       with:
