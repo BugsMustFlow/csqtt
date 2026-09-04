@@ -19,8 +19,8 @@ jobs:
         rm -f rust-toolchain.toml rust-toolchain .cargo/config.toml || true
         rm -f rust-server/rust-toolchain.toml rust-server/rust-toolchain rust-server/.cargo/config.toml || true
         
-        # Запускаем контейнер, передав ему команду сначала обновить rustc до последней стабильной версии, а затем собрать бинарник
-        docker run --rm -v ${{ github.workspace }}:/home/rust/src -w /home/rust/src/rust-server messense/rust-musl-cross:aarch64-musl sh -c "rustup update stable && cargo build --release --bin csqtt"
+        # Запускаем контейнер с флагом минимального профиля для обхода ошибки с clippy
+        docker run --rm -v ${{ github.workspace }}:/home/rust/src -w /home/rust/src/rust-server messense/rust-musl-cross:aarch64-musl sh -c "rustup set profile minimal && rustup update stable && cargo build --release --bin csqtt"
 
     # 3. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
     - name: Upload compiled binary
