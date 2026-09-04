@@ -24,21 +24,24 @@ jobs:
       with:
         targets: aarch64-unknown-linux-musl
 
-    # 4. Устанавливаем стабильный Zig 0.13.0 напрямую с официального сайта и плагин сборщика
-    - name: Install Zig and Cargo-Zigbuild
+    # 4. Автоматически разворачиваем актуальный Zig 0.14.0
+    - name: Set up Zig compiler
+      uses: goto-bus-stop/setup-zig@v2
+      with:
+        version: 0.17.0
+
+    # 5. Устанавливаем плагин сборщика
+    - name: Install Cargo-Zigbuild
       run: |
-        wget https://ziglang.org
-        tar -xf zig-linux-x86_64-0.17.0.tar.xz
-        echo "$GITHUB_WORKSPACE/zig-linux-x86_64-0.17.0" >> $GITHUB_PATH
         cargo install cargo-zigbuild
 
-    # 5. Компилируем серверную часть
+    # 6. Компилируем серверную часть
     - name: Build release binary
       run: |
         cd rust-server
         cargo zigbuild --release --target aarch64-unknown-linux-musl --bin csqtt
 
-    # 6. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
+    # 7. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
     - name: Upload compiled binary
       uses: actions/upload-artifact@v4
       with:
