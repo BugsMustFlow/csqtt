@@ -13,10 +13,12 @@ jobs:
       uses: actions/checkout@v4
 
     # 2. Устанавливаем и настраиваем компилятор Rust
-    - name: Set up Rust
-      uses: dtolnay/rust-toolchain@stable
+    - name: Set up Rust toolchain
+      uses: actions-rs/toolchain@v1
       with:
-        targets: aarch64-unknown-linux-musl
+        toolchain: stable
+        target: aarch64-unknown-linux-musl
+        override: true
 
     # 3. Компилируем серверную часть под архитектуру NanoPi
     - name: Build release binary
