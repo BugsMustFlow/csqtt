@@ -12,17 +12,31 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Компилируем серверную часть в изолированном контейнере, предварительно очистив локальные конфиги
-    - name: Build release binary via Rust-Musl-Cross Docker
+    # 2. Очищаем локальные файлы настроек тулчейна авторов
+    - name: Clean local toolchains
       run: |
-        # Принудительно удаляем локальные файлы настроек тулчейна, чтобы избежать конфликта путей
         rm -f rust-toolchain.toml rust-toolchain .cargo/config.toml || true
         rm -f rust-server/rust-toolchain.toml rust-server/rust-toolchain rust-server/.cargo/config.toml || true
-        
-        # Запускаем контейнер с флагом минимального профиля для обхода ошибки с clippy
-        docker run --rm -v ${{ github.workspace }}:/home/rust/src -w /home/rust/src/rust-server messense/rust-musl-cross:aarch64-musl sh -c "rustup set profile minimal && rustup update stable && cargo build --release --bin csqtt"
 
-    # 3. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
+    # 3. Устанавливаем официальный свежий Rust и добавляем целевой таргет для NanoPi
+    - name: Set up latest Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: aarch64-unknown-linux-musl
+
+    # 4. Устанавливаем легковесный компилятор Zig и плагин сборщика (как делали на ПК)
+    - name: Install Zig and Cargo-Zigbuild
+      run: |
+        sudo snap install zig --classic
+        cargo install cargo-zigbuild
+
+    # 5. Компилируем серверную часть (всё пролетит автоматически за 2-3 минуты)
+    - name: Build release binary
+      run: |
+        cd rust-server
+        cargo zigbuild --release --target aarch64-unknown-linux-musl --bin csqtt
+
+    # 6. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
     - name: Upload compiled binary
       uses: actions/upload-artifact@v4
       with:
