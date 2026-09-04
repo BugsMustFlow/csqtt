@@ -12,13 +12,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Устанавливаем и настраиваем компилятор Rust
-    - name: Set up Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        target: aarch64-unknown-linux-musl
-        override: true
+    # 2. Настраиваем окружение и принудительно ставим таргет через стандартный rustup
+    - name: Install aarch64 target
+      run: |
+        rustup target add aarch64-unknown-linux-musl
 
     # 3. Компилируем серверную часть под архитектуру NanoPi
     - name: Build release binary
