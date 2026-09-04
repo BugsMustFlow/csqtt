@@ -24,13 +24,15 @@ jobs:
       with:
         targets: aarch64-unknown-linux-musl
 
-    # 4. Устанавливаем легковесный компилятор Zig и плагин сборщика (как делали на ПК)
+    # 4. Устанавливаем стабильный Zig 0.13.0 напрямую с официального сайта и плагин сборщика
     - name: Install Zig and Cargo-Zigbuild
       run: |
-        sudo snap install zig --classic
+        wget https://ziglang.org
+        tar -xf zig-linux-x86_64-0.13.0.tar.xz
+        echo "$GITHUB_WORKSPACE/zig-linux-x86_64-0.13.0" >> $GITHUB_PATH
         cargo install cargo-zigbuild
 
-    # 5. Компилируем серверную часть (всё пролетит автоматически за 2-3 минуты)
+    # 5. Компилируем серверную часть
     - name: Build release binary
       run: |
         cd rust-server
