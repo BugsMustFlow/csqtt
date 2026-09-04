@@ -1,29 +1,25 @@
 name: Build CSQTT Server for NanoPi
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную одной кнопкой в браузере
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Скачиваем код из вашего репозитория
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Настраиваем окружение и принудительно ставим таргет через стандартный rustup
-    - name: Install aarch64 target
+    - name: Install Cross-compiler tool
       run: |
-        rustup target add aarch64-unknown-linux-musl
+        cargo install cross
 
-    # 3. Компилируем серверную часть под архитектуру NanoPi
-    - name: Build release binary
+    - name: Build release binary via Cross
       run: |
         cd rust-server
-        cargo build --release --target aarch64-unknown-linux-musl --bin csqtt
+        cross build --release --target aarch64-unknown-linux-musl --bin csqtt
 
-    # 4. Упаковываем готовый бинарник в ZIP-архив и выкладываем на страницу скачивания
     - name: Upload compiled binary
       uses: actions/upload-artifact@v4
       with:
