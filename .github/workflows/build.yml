@@ -28,8 +28,8 @@ jobs:
     - name: Install Zig and Cargo-Zigbuild
       run: |
         wget https://ziglang.org
-        tar -xf zig-linux-x86_64-0.13.0.tar.xz
-        echo "$GITHUB_WORKSPACE/zig-linux-x86_64-0.13.0" >> $GITHUB_PATH
+        tar -xf zig-linux-x86_64-0.17.0.tar.xz
+        echo "$GITHUB_WORKSPACE/zig-linux-x86_64-0.17.0" >> $GITHUB_PATH
         cargo install cargo-zigbuild
 
     # 5. Компилируем серверную часть
